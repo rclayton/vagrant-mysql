@@ -4,8 +4,14 @@
     root_db_password: password
   gather_facts: True
   tasks:
+    - name: Update the OS
+      command: yum -y update
+
+    - name: Install MySQL Community YUM Repo.
+      yum: name=http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm state=installed
+
     - name: Install MySQL
-      yum: name=mysql-server state=installed
+      yum: name=mysql-community-server state=installed
 
     - name: Install MySQL-python
       yum: name=MySQL-python state=installed
@@ -13,19 +19,23 @@
     - name: Ensure MySQL is running
       service: name=mysqld state=started enabled=true
 
+    - name: Ensure MySQL starts at boot
+      command: /sbin/chkconfig mysqld on
+
     - name: Ensure IPTables is not running
       service: name=iptables state=stopped enabled=false
-
-    - name: Copy the my.cnf
-      copy: src=my.cnf dest=/root/.my.cnf owner=root mode=0600
 
     - name: Update MySQL Root Password
       mysql_user: name=root host=$item password=$root_db_password
       with_items:
         - $ansible_hostname
+        - 192.168.24.1
         - 127.0.0.1
         - ::1
         - localhost
+
+    - name: Copy the my.cnf
+      template: src=my.cnf dest=/root/.my.cnf owner=root mode=0600
 
     - name: Annonymous Users not in MySQL
       mysql_user: name='' host=$item state=absent

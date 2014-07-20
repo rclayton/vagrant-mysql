@@ -15,6 +15,6 @@ Assuming you have done accepted the terms of service, these scripts will automat
 
 **Password**: password
 
-You can change this by modifying the `playbook.yml`.  If you do change the password, remember to update the `my.cnf` file as well.
+You can change this by modifying the `root_db_password` variable in `playbook.yml`.  I've changed the playbook to ensure the `.my.cnf` also uses this value.
 
 The test database is also removed, and IPTables is turned off.  I'm using this in a private network on my local box and don't need much security.
